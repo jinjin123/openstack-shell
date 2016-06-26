@@ -98,6 +98,7 @@ yum clean all && yum install  memcached python-memcached
 echo "yum clean all && yum install  memcached python-memcached"
 systemctl enable memcached.service && systemctl start memcached.service
 echo " systemctl enable memcached.service &&systemctl start memcached.service"
+}
 memcached-tool 127.0.0.1:11211 stats
 if [ $? -eq 0 ]
 then
@@ -106,7 +107,7 @@ then
 else
 	fn_install_memcached
 fi
-}
+
 
 echo -e "\033[32m ################################################ \033[0m"
 echo -e "\033[32m ###   install mariadb and rabbitmq sucessed.#### \033[0m"
