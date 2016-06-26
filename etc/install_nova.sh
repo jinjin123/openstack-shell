@@ -1,11 +1,11 @@
 #!/bin/bash
 NAMEHOST=$HOSTNAME
-line=`cat /var/log/install_log | awk '{print$1}'`
+line=`wc -l  /var/log/install_log | awk '{print$1}'`
 if [ $line -eq 6 ]
 then
 	echo "glance had installed."
 else
-	echo -e "\033[41;37m you should install keystone first. \033[0m"
+	echo -e "\033[41;37m you should install glance first. \033[0m"
 	exit
 fi
 
@@ -60,7 +60,7 @@ fi
 ENDPOINT_NOVA=`openstack endpoint list | grep nova | awk -F "|" '{print$4}' | awk '{if($1=="nova"){print $1,$2,$3;exit}}'`
 if [ ${ENDPOINT_NOVA}x = novax ]
 then
-	log_info "openstack endpoint create nova."
+	echo "openstack endpoint create nova."
 else
     openstack endpoint create --region RegionOne compute public http://$HOSTNAME:8774/v2.1/%\(tenant_id\)s && openstack endpoint create --region RegionOne compute internal http://$HOSTNAME:8774/v2.1/%\(tenant_id\)s && openstack endpoint create --region RegionOne compute admin http://$HOSTNAME:8774/v2.1/%\(tenant_id\)s
     echo "create nova endpoint  "
@@ -72,13 +72,13 @@ cp $PWD/lib/nova.conf /etc/nova/nova.conf
 
 su -s /bin/sh -c "nova-manage api_db sync" nova && su -s /bin/sh -c "nova-manage db sync" nova
 echo "sync db nova" 
-systemctl enable openstack-nova-api.service && openstack-nova-consoleauth.service openstack-nova-scheduler.service && openstack-nova-conductor.service openstack-nova-novncproxy.service
+systemctl enable openstack-nova-api.service  openstack-nova-consoleauth.service openstack-nova-scheduler.service  openstack-nova-conductor.service openstack-nova-novncproxy.service
 echo "Start the Compute services and configure them to start when the system boots:"
-systemctl start openstack-nova-api.service && openstack-nova-consoleauth.service openstack-nova-scheduler.service  openstack-nova-conductor.service openstack-nova-novncproxy.service
+systemctl start openstack-nova-api.service  openstack-nova-consoleauth.service openstack-nova-scheduler.service  openstack-nova-conductor.service openstack-nova-novncproxy.service
 echo "is doing restart service ..."
 
 yum clean all &&  yum install openstack-nova-compute 
-[ -f /etc/nova/nova.conf ] || cp $PWD/lib/nova.conf
+[ -f /etc/nova/nova.conf ] || cp  -a $PWD/lib/nova.conf
 
 HWRDWARE=`egrep -c '(vmx|svm)' /proc/cpuinfo`
 if [ ${HWRDWARE} -eq 0 ]
@@ -115,7 +115,7 @@ else
 fi
 
 echo "wait to restart nova service ... "
-systemctl start openstack-nova-api.service && openstack-nova-consoleauth.service openstack-nova-scheduler.service  openstack-nova-conductor.service openstack-nova-novncproxy.service libvirtd.service openstack-nova-compute.service
+systemctl start openstack-nova-api.service  openstack-nova-consoleauth.service openstack-nova-scheduler.service  openstack-nova-conductor.service openstack-nova-novncproxy.service libvirtd.service openstack-nova-compute.service
 echo -e "\033[32m ################################################ \033[0m"
 echo -e "\033[32m ###         install nova sucessed           #### \033[0m"
 echo -e "\033[32m ################################################ \033[0m"
