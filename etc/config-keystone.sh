@@ -67,13 +67,21 @@ export OS_TOKEN=$ADMIN_TOKEN
 export OS_URL=http://$HOSTNAME:35357/v3
 export OS_IDENTITY_API_VERSION=3
 
+SERVICE_NAME=`openstack service list | grep keystone | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [ ${SERVICE_NAME}x  = keystonex ]
+then 
+	echo "openstack service have create"
+else
+	openstack service create --name keystone --description "OpenStack Identity" identity 
+	echo "create OpenStack service"
+fi
+
 ENDPOINT_LIST=`openstack endpoint list | grep keystone | awk -F "|" '{print$4}' | awk '{if($1=="keystone"){print $1,$2,$3;exit}}'`
 if [  ${ENDPOINT_LIST}x  = keystonex  ]
 then
-	log_info "openstack endpoint had created."
+	echo "openstack endpoint had created."
 else
-	openstack service create --name keystone --description "OpenStack Identity" identity && openstack endpoint create --region RegionOne identity public http://$HOSTNAME:5000/v3 && openstack endpoint create --region RegionOne 
-  identity internal http://$HOSTNAME:5000/v3 && openstack endpoint create --region RegionOne identity admin http://$HOSTNAME:35357/v3
+	 openstack endpoint create --region RegionOne identity public http://$HOSTNAME:5000/v3 && openstack endpoint create --region RegionOne identity internal http://$HOSTNAME:5000/v3 && openstack endpoint create --region RegionOne identity admin http://$HOSTNAME:35357/v3
 	echo "OpenStack endpoint create"
 fi
 
