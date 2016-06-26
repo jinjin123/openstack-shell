@@ -37,10 +37,10 @@ else
 fi
 
 source /root/admin-openrc.sh 
-SERVICE_NOVA=`openstack service list | grep nova | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
-if [  ${SERVICE_NOVA}x = novax ]
-then 
-	echo "openstack service create nova."
+USER_NOVA=`openstack user list | grep nova | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [ ${USER_NOVA}x = novax ]
+then
+	echo "openstack user had created  nova"
 else
 	openstack user create nova --password nova --domain default
 	echo "openstack user create nova --password nova --domain default"
@@ -48,13 +48,22 @@ else
 	echo "openstack role add --project service --user nova admin"
 fi
 
+SERVICE_NOVA=`openstack service list | grep nova | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [  ${SERVICE_NOVA}x = novax ]
+then 
+	echo "openstack service create nova."
+else
+	openstack service create --name nova --description "OpenStack Compute" compute
+	echo "create nova service"
+fi
+
 ENDPOINT_NOVA=`openstack endpoint list | grep nova | awk -F "|" '{print$4}' | awk '{if($1=="nova"){print $1,$2,$3;exit}}'`
 if [ ${ENDPOINT_NOVA}x = novax ]
 then
 	log_info "openstack endpoint create nova."
 else
-    openstack service create --name nova --description "OpenStack Compute" compute && openstack endpoint create --region RegionOne compute public http://$HOSTNAME:8774/v2.1/%\(tenant_id\)s && openstack endpoint create --region RegionOne compute internal http://$HOSTNAME:8774/v2.1/%\(tenant_id\)s && openstack endpoint create --region RegionOne compute admin http://$HOSTNAME:8774/v2.1/%\(tenant_id\)s
-    echo "create compute service"
+    openstack endpoint create --region RegionOne compute public http://$HOSTNAME:8774/v2.1/%\(tenant_id\)s && openstack endpoint create --region RegionOne compute internal http://$HOSTNAME:8774/v2.1/%\(tenant_id\)s && openstack endpoint create --region RegionOne compute admin http://$HOSTNAME:8774/v2.1/%\(tenant_id\)s
+    echo "create nova endpoint  "
 fi
 
 yum clean all && yum install openstack-nova-api openstack-nova-conductor openstack-nova-console openstack-nova-novncproxy openstack-nova-scheduler
