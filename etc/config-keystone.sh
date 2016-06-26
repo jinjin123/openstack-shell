@@ -163,7 +163,7 @@ echo "[ -f /root/admin-openrc.sh  ] || cp -a $PWD/lib/admin-openrc.sh  /root/adm
 
 [ -f /root/demo-openrc.sh  ]  || cp -a $PWD/lib/demo-openrc.sh  /root/demo-openrc.sh 
 echo "cp -a $PWD/lib/demo-openrc.sh  /root/demo-openrc.sh "
-source ~/admin-openrc.sh
+source /root/admin-openrc.sh
 openstack token issue
 echo "openstack token issue"
 
