@@ -108,7 +108,6 @@ else
 	fn_install_memcached
 fi
 
-
 echo -e "\033[32m ################################################ \033[0m"
 echo -e "\033[32m ###   install mariadb and rabbitmq sucessed.#### \033[0m"
 echo -e "\033[32m ###   install mongodb and memcached sucessed.### \033[0m"
