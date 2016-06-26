@@ -43,10 +43,19 @@ fi
 SERVICE_IMAGE=`openstack service list | grep glance | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
 if [  ${SERVICE_IMAGE}x = glancex ]
 then 
-	log_info "openstack service create glance."
+	echo  "openstack service create glance."
+else
+	openstack service create --name glance --description "OpenStack Image service" image
+	echo "create glance service"
+fi
+
+ENDPOINT_GLANCE=`openstack endpoint list | grep glance | awk -F "|" '{print$4}' | awk '{if($1=="glance"){print $1,$2,$3;exit}}'`
+if [ ${ENDPOINT_GLANCE}x = glancex ]
+then
+	echo "openstack endpoint create glance."
 else
 	openstack endpoint create --region RegionOne image public http://$HOSTNAME:9292 && openstack endpoint create --region RegionOne image internal http://$HOSTNAME:9292 && openstack endpoint create --region RegionOne image admin http://$HOSTNAME:9292
-    echo "openstack endpoint create --region RegionOne image public http://controller:9292 && openstack endpoint create --region RegionOne image internal http://controller:9292 && openstack endpoint create --region RegionOne image admin http://controller:9292"
+	echo "create glance endpoint"
 fi
 
 yum clean all &&  yum install openstack-glance
@@ -75,5 +84,4 @@ echo "glance image list"
 echo -e "\033[32m ################################################ \033[0m"
 echo -e "\033[32m ###        install glance sucessed         #### \033[0m"
 echo -e "\033[32m ################################################ \033[0m"
-
 echo "glance" >> /var/log/install_log
