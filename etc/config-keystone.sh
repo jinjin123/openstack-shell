@@ -20,6 +20,15 @@ function fn_create_keystone_database(){
 mysql -e "CREATE DATABASE keystone;" && mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'controller' IDENTIFIED BY 'KEYSTONE_DBPASS';" && mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'KEYSTONE_DBPASS';"
 echo "create DATABASE"
 }
+netstat -luntp | grep 3306 > /dev/null
+if [ $? -eq 0 ]
+then
+	exit
+else
+	echo "check the mysql is running or die?"
+	fn_create_keystone_database
+fi
+
 [ -f /etc/keystone/keystone.conf ] || cp -a /etc/keystone/keystone.conf /etc/keystone/keystone.conf.bak
 echo "[ -f /etc/keystone/keystone.conf ] || cp -a /etc/keystone/keystone.conf /etc/keystone/keystone.conf.bak"
 ADMIN_TOKEN=$(openssl rand -hex 10)
