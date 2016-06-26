@@ -1,6 +1,6 @@
 #!/bin/bash
 NAMEHOST=$HOSTNAME
-line=`cat /var/log/install_log | awk '{print$1}'`
+line=` wc -l /var/log/install_log | awk '{print$1}'`
 if [ $line -eq 4 ]
 then
 	echo "db had installed."
