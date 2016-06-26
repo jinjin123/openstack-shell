@@ -1,6 +1,6 @@
 #!/bin/bash
 NAMEHOST=$HOSTNAME
-line=`cat /var/log/install_log | awk '{print$1}'`
+line=` wc -l /var/log/install_log | awk '{print$1}'`
 if [ $line -eq 5 ]
 then
 	echo "keystone had installed."
@@ -69,8 +69,7 @@ su -s /bin/sh -c "glance-manage db_sync" glance
 echo "su -s /bin/sh -c "glance-manage db_sync" glance"
 
 systemctl enable openstack-glance-api.service openstack-glance-registry.service && systemctl start openstack-glance-api.service openstack-glance-registry.service
-echo "systemctl enable openstack-glance-api.service openstack-glance-registry.service && systemctl start openstack-glance-api.service openstack-glance-registry.service
-"
+echo "systemctl enable openstack-glance-api.service openstack-glance-registry.service && systemctl start openstack-glance-api.service openstack-glance-registry.service"
 
 function fn_create_image(){
 source /root/admin-openrc
