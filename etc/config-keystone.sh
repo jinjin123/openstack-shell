@@ -67,3 +67,98 @@ else
   identity internal http://$HOSTNAME:5000/v3 && openstack endpoint create --region RegionOne identity admin http://$HOSTNAME:35357/v3
 	echo "OpenStack endpoint create"
 fi
+
+PROJECT_ADMIN=`openstack project list | grep admin | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [ ${PROJECT_ADMIN}x = adminx ]
+then
+	echo  "openstack project admin create."
+else 
+	#create default domain and project admin
+    openstack domain create --description "Default Domain" default  && openstack project create --domain default --description "Admin Project" admin
+    echo "openstack domain create --description "Default Domain" default  && openstack project create --domain default --description "Admin Project" admin"
+fi
+
+USER_LIST=`openstack user list | grep admin | awk -F "|" '{print$3}' | awk -F " " '{print $1}'|grep '^a'`
+if [ ${USER_LIST}x = adminx ]
+then
+	echo "openstack user had  created  admin"
+else
+	#create user admin  and passwd set admin
+    openstack user create admin --password admin --domain default
+    echo "openstack user create admin --password admin --domain default" 
+fi
+
+ROLE_ADMIN=`openstack role list | grep admin | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [ ${ROLE_ADMIN}x = adminx ]
+then 
+	echo "openstack role had created admin"
+else
+	openstack role create admin
+    echo "openstack role create admin"
+    openstack role add --project admin --user admin admin
+    echo "openstack role add --project admin --user admin admin"
+fi
+
+PROJECT_SERVICE=`openstack project list |grep service | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [  ${PROJECT_SERVICE}x = servicex ]
+then
+	echo "openstack project had created service. "
+else
+	openstack project create --domain default --description "Service Project" service
+    echo "openstack project create --domain default --description "Service Project" service"
+fi
+
+PROJECT_DEMO=`openstack project list |grep demo | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [  ${PROJECT_DEMO}x = demox ]
+then
+	echo "openstack project had created demo "
+else
+	openstack project create --domain default --description "Demo Project" demo
+	echo "openstack project create --domain default --description "Demo Project" demo"
+fi
+
+USER_DEMO=` openstack user list |grep demo |awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [ ${USER_DEMO}x  =  demox ]
+then
+	echo "openstack user had created  demo"
+else
+	openstack user create demo --password demo --domain default
+    echo "openstack user create demo --password demo --domain default"
+fi
+
+
+ROLE_LIST=`openstack role list | grep user  |awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [ ${ROLE_LIST}x = userx ]
+then
+     echo "openstack role had  created user."
+else
+	openstack role create user
+	echo "openstack role create user"
+	openstack role add --project demo --user demo user
+	echo "openstack role add --project demo --user demo user"
+fi
+
+mv /etc/keystone/keystone-paste.ini /etc/keystone/keystone-paste.ini.bak && sed -i '54,64 s/admin_token_auth//' /etc/keystone/keystone-paste.ini
+unset OS_TOKEN OS_URL
+#uses the password for the admin user.
+openstack --os-auth-url http://controller:35357/v3   --os-project-domain-name default --os-user-domain-name default   --os-project-name admin --os-username admin --os-auth-type password token issue --os-password admin
+echo "openstack --os-auth-url http://controller:35357/v3   --os-project-domain-name default --os-user-domain-name default   --os-project-name admin --os-username admin --os-auth-type password token issue --os-password admin"
+
+#uses the password for the demo user.
+openstack --os-auth-url http://controller:35357/v3   --os-project-domain-name default --os-user-domain-name default   --os-project-name demo --os-username demo --os-auth-type password token issue --os-password demo
+echo "openstack --os-auth-url http://controller:35357/v3   --os-project-domain-name default --os-user-domain-name default   --os-project-name demo --os-username demo --os-auth-type password token issue --os-password demo
+"
+
+[ -f /root/admin-openrc.sh  ] || cp -a $PWD/lib/admin-openrc.sh  /root/admin-openrc.sh 
+echo "[ -f /root/admin-openrc.sh  ] || cp -a $PWD/lib/admin-openrc.sh  /root/admin-openrc.sh "
+
+[ -f /root/demo-openrc.sh  ]  || cp -a $PWD/lib/demo-openrc.sh  /root/demo-openrc.sh 
+echo "cp -a $PWD/lib/demo-openrc.sh  /root/demo-openrc.sh "
+source ~/admin-openrc.sh
+openstack token issue
+echo "openstack token issue"
+
+echo -e "\033[32m ################################################ \033[0m"
+echo -e "\033[32m ###       install keystone sucessed         #### \033[0m"
+echo -e "\033[32m ################################################ \033[0m"
+echo "keystone" >> /var/log/install_log
