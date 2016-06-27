@@ -13,7 +13,6 @@ cat /var/log/install_log | grep glance
 if [ $? -eq 0 ]
 then
 	echo "you had install glance ."
-	exit
 fi
 
 cat /var/log/install_log | grep nova
