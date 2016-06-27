@@ -40,6 +40,7 @@ else
 fi
 
 SERVICE_NEUTRON=`openstack service list | grep neutron | awk -F "|" '{print$3}' | awk -F " " '{print$1}'`
+if [ ${SERVICE_NEUTRON}x = neutronx ]
 then
 	echo "openstack service  created  neutron"
 else
