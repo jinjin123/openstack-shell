@@ -13,7 +13,6 @@ cat /var/log/install_log | grep nova
 if [ $? -eq 0 ]
 then
 	echo "you had install nova ."
-	exit
 fi
 
 cat /var/log/install_log | grep cinder
