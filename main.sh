@@ -62,7 +62,7 @@ elif [ ${install_number} -eq 6]
 then
 	fn_install_neutron
 	fn_install_openstack
-elif [ ${install_number} -eq 8 ]
+elif [ ${install_number} -eq 7 ]
 then
 	/bin/bash $PWD/etc/install_graph.sh
 	echo "/bin/bash $PWD/etc/install_graph.sh"
