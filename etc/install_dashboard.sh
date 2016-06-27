@@ -18,3 +18,6 @@ fi
 
 yum install openstack-dashboard && [ -f /etc/openstack-dashboard/local_settings.bak ] || mv /etc/openstack-dashboard/local_settings /etc/openstack-dashboard/local_settings.bak
 cp $PWD/lib/local_settings /etc/openstack-dashboard/local_settings && systemctl restart httpd.service memcached.service && echo "Access the dashboard using a web browser at http://controller/dashboard." && echo "dashboard" >> /var/log/install_log
+echo -e "\033[32m ################################# \033[0m"
+echo -e "\033[32m ##   install dashboard sucessed.# \033[0m"
+echo -e "\033[32m ################################# \033[0m"
