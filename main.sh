@@ -8,8 +8,9 @@ cat <<EOF
 4)install nova.
 5)install cinder.
 6)install neutron.
-7)install dashboard.
-8)quit
+7)install graph with VM.
+8)install dashboard.
+9)quit
 EOF
 
 read -p "please input one number :" install_number
@@ -61,12 +62,17 @@ elif [ ${install_number} -eq 6]
 then
 	fn_install_neutron
 	fn_install_openstack
-elif [ ${install_number} -eq 7 ]
+elif [ ${install_number} -eq 8 ]
+then
+	/bin/bash $PWD/etc/install_graph.sh
+	echo "/bin/bash $PWD/etc/install_graph.sh"
+	fn_install_openstack
+elif [ ${install_number} -eq 8 ]
 then
 	/bin/bash $PWD/etc/install_dashboard.sh
 	echo "/bin/bash $PWD/etc/install_dashboard.sh"
 	fn_install_openstack
-elif [ ${install_number} -eq 8 ]
+elif [ ${install_number} -eq 9 ]
 then
 	echo "exit install."
     exit
